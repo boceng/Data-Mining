@@ -14,6 +14,7 @@ __整体过程：得到原始数据先进行预处理，将数据在均值附近
 意外发现PCA+t-SNE对数据降维后非常切合Ground truth的分布。
 
 Code：
+
     import numpy as np
     import matplotlib.pyplot as plt
 
