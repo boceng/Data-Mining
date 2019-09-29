@@ -4,12 +4,12 @@
 __想法：得到原始数据先进行预处理，将数据在均值附近集中化并缩放至单位误差，使用KMeans分别对预处理后的数据、PCA降维后的数据、PCA+t-SNE降维后的数据进行聚类，然后使用三种度量方法对其评估，并对得到的簇进行可视化__
 
 聚类评价得分（数据类型、运行时间、样本到最近簇中心平方和、NMI/V_MS、HS、CS）：
-![https://github.com/boceng/Data-Mining/blob/master/Homework1/TIM%E6%88%AA%E5%9B%BE20190929104144.jpg]
+![图片1](https://github.com/boceng/Data-Mining/blob/master/Homework1/TIM%E6%88%AA%E5%9B%BE20190929104144.jpg)
 
 可以意外发现通过PCA+t-SNE降维后的数据特征进行聚类要比直接对原始数据特征的各个度量都要高出很多的得分。
 
 聚类可视化（从左到右-从上到下：原始数据分布下的真实标签(PCA可视化)、原始数据分布下的真实标签(PCA+t-SNE可视化)、原始数据分布下使用KMeans得到的标签(PCA可视化)、原始数据分布下使用KMeans得到的标签(PCA+t-SNE可视化)、PCA降维后的数据分布下使用KMeans得到的标签(PCA可视化)、PCA+t-SNE降维后的数据分布下使用KMeans得到的标签(PCA+t-SNE可视化)）
-![https://github.com/boceng/Data-Mining/blob/master/Homework1/Figure_1.png]
+![图片2](https://github.com/boceng/Data-Mining/blob/master/Homework1/Figure_1.png)
 
 意外发现PCA+t-SNE对数据降维后非常切合Ground truth的分布。
 
