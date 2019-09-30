@@ -113,7 +113,7 @@ __整体过程基本和KMeans一样，不过采用了不同的可视化方法。
 聚类可视化（从左到右-从上到下：原始数据分布下使用AffinityPropagation得到的标签(PCA可视化)、原始数据分布下使用AffinityPropagation得到的标签(PCA+t-SNE可视化)、PCA降维后的数据分布下使用AffinityPropagation得到的标签(PCA可视化)、PCA+t-SNE降维后的数据分布下使用AffinityPropagation得到的标签(PCA+t-SNE可视化)）：
 ![图片5](https://github.com/boceng/Data-Mining/blob/master/Homework1/Figure_2.png)
 
-会发现，该算法对降维后的数据特征进行聚类基本坏掉了（调了半天参数仍没找好的结果）。
+会发现，很明显使用原始数据特征进行聚类的效果比较好，但该算法对降维后的数据特征进行聚类基本坏掉了（调了半天参数仍没找好的结果）。
 
 Code：
 
