@@ -105,7 +105,7 @@ Code：
 ### AffinityPropagation
 __整体过程基本和KMeans一样，不过采用了不同的可视化方法。__
 
-聚类评价得分（数据类型、运行时间、样本到最近簇中心平方和、NMI/V_MS、HS、CS）：
+聚类评价得分（数据类型、运行时间、NMI/V_MS、HS、CS）：
 ![图片4](https://github.com/boceng/Data-Mining/blob/master/Homework1/result_3.jpg)
 
 该算法的得分较KMeans有的度量有一些提升，有的度量有一些下降（包括原始数据特征和降维后的数据特征）。
@@ -113,7 +113,7 @@ __整体过程基本和KMeans一样，不过采用了不同的可视化方法。
 聚类可视化（从左到右-从上到下：原始数据分布下使用AffinityPropagation得到的标签(PCA可视化)、原始数据分布下使用AffinityPropagation得到的标签(PCA+t-SNE可视化)、PCA降维后的数据分布下使用AffinityPropagation得到的标签(PCA可视化)、PCA+t-SNE降维后的数据分布下使用AffinityPropagation得到的标签(PCA+t-SNE可视化)）：
 ![图片5](https://github.com/boceng/Data-Mining/blob/master/Homework1/Figure_2.png)
 
-会发现，该算法对降维后的数据特征进行聚类基本坏掉了（调了半天参数没仍没找好的结果）。
+会发现，该算法对降维后的数据特征进行聚类基本坏掉了（调了半天参数仍没找好的结果）。
 
 Code：
 
