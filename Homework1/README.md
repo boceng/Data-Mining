@@ -237,4 +237,16 @@ Code：
 
     plt.show()
 
-### other
+### MeanShift
+__整体过程如上。__
+
+聚类评价得分：
+![图片6](https://github.com/boceng/Data-Mining/blob/master/Homework1/result_4.jpg)
+
+只是简单调了一下估计带框的方法参数，0-1都试了下均得不到好的结果，待解决。
+
+聚类可视化（从左到右-从上到下：原始数据分布下使用MeanShift得到的标签(PCA可视化)、原始数据分布下使用MeanShift得到的标签(PCA+t-SNE可视化)）：
+![图片7](https://github.com/boceng/Data-Mining/blob/master/Homework1/Figure_3.png)
+
+会发现，很明显使用原始数据特征进行聚类的效果比较好，但该算法对降维后的数据特征进行聚类基本坏掉了（调了半天参数仍没找好的结果）。
+
