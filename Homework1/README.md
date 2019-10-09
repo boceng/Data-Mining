@@ -251,4 +251,120 @@ __整体过程如上。__
 
 结果很明显坏掉了。。
 
+### SpectralClustering
+__先通过KNN得到相似性矩阵，然后利用拉普拉斯矩阵得到特征矩阵作为最终feature。__
+
+聚类评价得分（数据类型、运行时间、NMI/V_MS、HS、CS）：
+![图片7](https://github.com/boceng/Data-Mining/blob/master/Homework1/result_5.jpg)
+
+该算法的得分较Original KMeans要普遍好一些。
+
+聚类可视化（从左到右-从上到下：原始数据分布下使用SpectralClustering得到的标签(PCA可视化)、原始数据分布下使用SpectralClustering得到的标签(PCA+t-SNE可视化)、原始数据分布下使用SpectralClustering得到的标签(PCA可视化)、原始数据分布下使用SpectralClustering得到的标签(PCA+t-SNE可视化)）：
+![图片8](https://github.com/boceng/Data-Mining/blob/master/Homework1/Figure_4.png)
+
+如图4，很明显它较groundtruth的同质性得分应该还是比降维后的数据使用KMeans低一些的。
+
+Code:
+
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from itertools import cycle
+
+    from sklearn.datasets import load_digits
+    from sklearn.preprocessing import scale
+    from sklearn.cluster import KMeans, MiniBatchKMeans, AffinityPropagation
+    from sklearn.cluster import MeanShift, estimate_bandwidth, SpectralClustering
+    from sklearn.decomposition import PCA
+    from sklearn.manifold import TSNE
+    from sklearn.metrics import normalized_mutual_info_score, homogeneity_score
+    from sklearn.metrics import completeness_score, v_measure_score
+    from time import time
+
+    np.random.seed(233)
+
+    digits = load_digits()
+    data = scale(digits.data)   # 在均值附近集中化数据并缩放至单位方差
+    reduced_data1 = PCA(n_components=2).fit_transform(data)
+    reduced_data2 = TSNE(n_components=2).fit_transform(PCA(n_components=50).fit_transform(data))
+    print(data.shape)
+
+    # print(data.mean(axis=0))
+    # print(data.std(axis=0))
+
+    n_samples, n_feature = data.shape
+    n_digits = len(np.unique(digits.target))
+    labels = digits.target
+
+    # SpectralClustering
+
+    X = data
+
+    def distance(p1,p2):  # 欧式距离
+        return np.linalg.norm(p1-p2)
+    def getWbyKNN(data,k):  # 利用KNN获得相似度矩阵
+        points_num = len(data)
+        dis_matrix = np.zeros((points_num,points_num))
+        W = np.zeros((points_num,points_num))
+        for i in range(points_num):
+            for j in range(i+1,points_num):
+                dis_matrix[i][j] = dis_matrix[j][i] = distance(data[i],data[j])
+        for idx,each in enumerate(dis_matrix):
+            index_array  = np.argsort(each)
+            W[idx][index_array[1:k+1]] = 1  # 距离最短的是自己
+        tmp_W = np.transpose(W)
+        W = (tmp_W+W)/2  #转置相加除以2是为了让矩阵对称
+        return W
+    def getD(W):    # 获得度矩阵
+        points_num = len(W)
+        D = np.diag(np.zeros(points_num))
+        for i in range(points_num):
+            D[i][i] = sum(W[i])
+        return D
+    def getEigVec(L,cluster_num):  #从拉普拉斯矩阵获得特征矩阵
+        eigval,eigvec = np.linalg.eig(L)
+        dim = len(eigval)
+        dictEigval = dict(zip(eigval,range(0,dim)))
+        kEig = np.sort(eigval)[0:cluster_num]
+        ix = [dictEigval[k] for k in kEig]
+        return eigval[ix], eigvec[:,ix]
+
+
+    cluster_num = n_digits
+    KNN_k = 5
+    W = getWbyKNN(X,KNN_k)
+    D = getD(W)
+    L = D-W
+    eigval, eigvec = getEigVec(L, cluster_num)
+
+    print(np.shape(eigvec))
+
+    sc = SpectralClustering(n_clusters=cluster_num).fit(eigvec)
+    labels_sc = sc.labels_
+    print('v_measure_score:', v_measure_score(labels, labels_sc))
+    print('homogeneity_score:', homogeneity_score(labels, labels_sc))
+    print('completeness_score:', completeness_score(labels, labels_sc))
+
+    plt.figure(figsize=(11, 8))
+
+    plt.subplot(221)
+    plt.scatter(reduced_data1[:, 0], reduced_data1[:, 1], c=labels)
+    plt.title('Ground Truth with PCA')
+
+    plt.subplot(222)
+    plt.scatter(reduced_data2[:, 0], reduced_data2[:, 1], c=labels)
+    plt.title('Ground Truth with PCA & TSNE')
+
+    plt.subplot(223)
+    y_predict_original = SpectralClustering(n_clusters=n_digits, n_init=10).fit_predict(eigvec)
+    plt.scatter(reduced_data1[:, 0], reduced_data1[:, 1], c=y_predict_original)
+    plt.title('Original Features SpectralClustering with PCA')
+
+    plt.subplot(224)
+    y_predict_original = SpectralClustering(n_clusters=n_digits, n_init=10).fit_predict(eigvec)
+    plt.scatter(reduced_data2[:, 0], reduced_data2[:, 1], c=y_predict_original)
+    plt.title('Original Features SpectralClustering with PCA & TSNE')
+
+    plt.show()
+
+
 ### other
