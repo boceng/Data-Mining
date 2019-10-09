@@ -255,6 +255,7 @@ __整体过程如上。__
 __先通过KNN得到相似性矩阵，然后利用拉普拉斯矩阵得到特征矩阵作为最终feature。__
 
 聚类评价得分（数据类型、运行时间、NMI/V_MS、HS、CS）：
+
 ![图片7](https://github.com/boceng/Data-Mining/blob/master/Homework1/result_5.jpg)
 
 该算法的得分较Original KMeans要普遍好一些。
