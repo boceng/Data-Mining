@@ -371,6 +371,7 @@ Code:
 __整体过程基本和KMeans一样。__
 
 聚类评价得分（数据类型、运行时间、NMI/V_MS、HS、CS）：
+
 ![图片9](https://github.com/boceng/Data-Mining/blob/master/Homework1/result_6.jpg)
 
 该算法的得分较Original KMeans有一些提升，较低于SpectralClustering的效果。
@@ -457,6 +458,7 @@ Code:
 __整体过程基本和KMeans一样。__
 
 聚类评价得分（数据类型、运行时间、NMI/V_MS、HS、CS）：
+
 ![图片11](https://github.com/boceng/Data-Mining/blob/master/Homework1/result_7.jpg)
 
 很明显该聚类方法不适合手写数字辨识这个数据集，只有当minPts=1时，才能将完整性得分降至小于1，说明数据点之间欧式距离高度相近。
