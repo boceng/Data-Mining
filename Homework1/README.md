@@ -367,5 +367,176 @@ Code:
 
     plt.show()
 
+### Agglomerative Clustering
+__整体过程基本和KMeans一样。__
+
+聚类评价得分（数据类型、运行时间、NMI/V_MS、HS、CS）：
+![图片9](https://github.com/boceng/Data-Mining/blob/master/Homework1/result_6.jpg)
+
+该算法的得分较Original KMeans有一些提升，较低于SpectralClustering的效果。
+
+聚类可视化（从左到右-从上到下：原始数据分布下的真实标签(PCA可视化)、原始数据分布下的真实标签(PCA+t-SNE可视化)、原始数据分布下使用Agglomerative Clustering得到的标签(PCA可视化)、原始数据分布下使用Agglomerative Clustering得到的标签(PCA+t-SNE可视化)、PCA降维后的数据分布下使用Agglomerative Clustering得到的标签(PCA可视化)、PCA+t-SNE降维后的数据分布下使用Agglomerative Clustering得到的标签(PCA+t-SNE可视化)）：
+![图片10](https://github.com/boceng/Data-Mining/blob/master/Homework1/Figure_5.png)
+
+对方法参数linkage分别试了：ward、average、complete、single，除了ward外效果都非常差。
+
+Code:
+
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    from sklearn.datasets import load_digits
+    from sklearn.preprocessing import scale
+    from sklearn.cluster import AgglomerativeClustering
+    from sklearn.decomposition import PCA
+    from sklearn.manifold import TSNE
+    from sklearn.metrics import homogeneity_score
+    from sklearn.metrics import completeness_score, v_measure_score
+
+    np.random.seed(233)
+
+    digits = load_digits()
+    data = scale(digits.data)   # 在均值附近集中化数据并缩放至单位方差
+    reduced_data1 = PCA(n_components=2).fit_transform(data)
+    reduced_data2 = TSNE(n_components=2).fit_transform(PCA(n_components=50).fit_transform(data))
+    print(data.shape)
+
+    n_samples, n_feature = data.shape
+    n_digits = len(np.unique(digits.target))
+    labels = digits.target
+
+
+    # AgglomerativeClustering
+    y_predict_original = AgglomerativeClustering(n_clusters=n_digits, linkage='ward').fit_predict(data)
+    y_predict_reduced = AgglomerativeClustering(n_clusters=n_digits, linkage='ward').fit_predict(reduced_data1)
+
+    print('v_measure_score:', v_measure_score(labels, y_predict_original))
+    print('homogeneity_score:', homogeneity_score(labels, y_predict_original))
+    print('completeness_score:', completeness_score(labels, y_predict_original))
+    print('----------')
+    print('v_measure_score:', v_measure_score(labels, y_predict_reduced))
+    print('homogeneity_score:', homogeneity_score(labels, y_predict_reduced))
+    print('completeness_score:', completeness_score(labels, y_predict_reduced))
+
+
+    # AgglomerativeClustering visualize
+    plt.figure(figsize=(10, 10))
+
+    plt.subplot(321)
+    plt.scatter(reduced_data1[:, 0], reduced_data1[:, 1], c=labels)
+    plt.title('Ground Truth with PCA')
+
+    plt.subplot(322)
+    plt.scatter(reduced_data2[:, 0], reduced_data2[:, 1], c=labels)
+    plt.title('Ground Truth with PCA & TSNE')
+
+    plt.subplot(323)
+    y_predict_original = AgglomerativeClustering(n_clusters=n_digits, linkage='ward').fit_predict(data)
+    plt.scatter(reduced_data1[:, 0], reduced_data1[:, 1], c=y_predict_original)
+    plt.title('Original Features AgglomerativeClustering with PCA')
+
+    plt.subplot(324)
+    y_predict_original = AgglomerativeClustering(n_clusters=n_digits, linkage='ward').fit_predict(data)
+    plt.scatter(reduced_data2[:, 0], reduced_data2[:, 1], c=y_predict_original)
+    plt.title('Original Features AgglomerativeClustering with PCA & TSNE')
+
+    plt.subplot(325)
+    y_predict_reduced = AgglomerativeClustering(n_clusters=n_digits, linkage='ward').fit_predict(reduced_data1)
+    plt.scatter(reduced_data1[:, 0], reduced_data1[:, 1], c=y_predict_reduced)
+    plt.title('PCA-based Feature AgglomerativeClustering with PCA')
+
+    plt.subplot(326)
+    y_predict_reduced = AgglomerativeClustering(n_clusters=n_digits, linkage='ward').fit_predict(reduced_data2)
+    plt.scatter(reduced_data2[:, 0], reduced_data2[:, 1], c=y_predict_reduced)
+    plt.title('PCA & TSNE-based Feature AgglomerativeClustering with PCA & TSNE')
+
+    plt.show()
+
+
+### DBSCAN
+__整体过程基本和KMeans一样。__
+
+聚类评价得分（数据类型、运行时间、NMI/V_MS、HS、CS）：
+![图片11](https://github.com/boceng/Data-Mining/blob/master/Homework1/result_7.jpg)
+
+很明显该聚类方法不适合手写数字辨识这个数据集，只有当minPts=1时，才能将完整性得分降至小于1，说明数据点之间欧式距离高度相近。
+
+聚类可视化（从左到右-从上到下：原始数据分布下的真实标签(PCA可视化)、原始数据分布下的真实标签(PCA+t-SNE可视化)、原始数据分布下使用DBSCAN得到的标签(PCA可视化)、原始数据分布下使用DBSCAN得到的标签(PCA+t-SNE可视化)、PCA降维后的数据分布下使用DBSCAN得到的标签(PCA可视化)、PCA+t-SNE降维后的数据分布下使用DBSCAN得到的标签(PCA+t-SNE可视化)）：
+![图片12](https://github.com/boceng/Data-Mining/blob/master/Homework1/Figure_6.png)
+
+可视化效果同样也很差。
+
+Code:
+
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    from sklearn.datasets import load_digits
+    from sklearn.preprocessing import scale
+    from sklearn.cluster import DBSCAN
+    from sklearn.decomposition import PCA
+    from sklearn.manifold import TSNE
+    from sklearn.metrics import homogeneity_score
+    from sklearn.metrics import completeness_score, v_measure_score
+
+    np.random.seed(233)
+
+    digits = load_digits()
+    data = scale(digits.data)   # 在均值附近集中化数据并缩放至单位方差
+    reduced_data1 = PCA(n_components=2).fit_transform(data)
+    reduced_data2 = TSNE(n_components=2).fit_transform(PCA(n_components=50).fit_transform(data))
+    print(data.shape)
+
+    n_samples, n_feature = data.shape
+    n_digits = len(np.unique(digits.target))
+    labels = digits.target
+
+
+    # DBSCAN
+    y_predict_original = DBSCAN(eps=0.0001, min_samples=2).fit_predict(data)
+    y_predict_reduced = DBSCAN(eps=0.0001, min_samples=2).fit_predict(reduced_data2)
+
+    print('v_measure_score:', v_measure_score(labels, y_predict_original))
+    print('homogeneity_score:', homogeneity_score(labels, y_predict_original))
+    print('completeness_score:', completeness_score(labels, y_predict_original))
+    print('------------------------------------')
+    print('v_measure_score:', v_measure_score(labels, y_predict_reduced))
+    print('homogeneity_score:', homogeneity_score(labels, y_predict_reduced))
+    print('completeness_score:', completeness_score(labels, y_predict_reduced))
+
+
+    # DBSCAN visualize
+    plt.figure(figsize=(10, 10))
+
+    plt.subplot(321)
+    plt.scatter(reduced_data1[:, 0], reduced_data1[:, 1], c=labels)
+    plt.title('Ground Truth with PCA')
+
+    plt.subplot(322)
+    plt.scatter(reduced_data2[:, 0], reduced_data2[:, 1], c=labels)
+    plt.title('Ground Truth with PCA & TSNE')
+
+    plt.subplot(323)
+    y_predict_original = DBSCAN(eps=0.1, min_samples=1).fit_predict(data)
+    plt.scatter(reduced_data1[:, 0], reduced_data1[:, 1], c=y_predict_original)
+    plt.title('Original Features DBSCAN with PCA')
+
+    plt.subplot(324)
+    y_predict_original = DBSCAN(eps=0.1, min_samples=1).fit_predict(data)
+    plt.scatter(reduced_data2[:, 0], reduced_data2[:, 1], c=y_predict_original)
+    plt.title('Original Features DBSCAN with PCA & TSNE')
+
+    plt.subplot(325)
+    y_predict_reduced = DBSCAN(eps=0.1, min_samples=1).fit_predict(reduced_data1)
+    plt.scatter(reduced_data1[:, 0], reduced_data1[:, 1], c=y_predict_reduced)
+    plt.title('PCA-based Feature DBSCAN with PCA')
+
+    plt.subplot(326)
+    y_predict_reduced = DBSCAN(eps=0.1, min_samples=1).fit_predict(reduced_data2)
+    plt.scatter(reduced_data2[:, 0], reduced_data2[:, 1], c=y_predict_reduced)
+    plt.title('PCA & TSNE-based Feature DBSCAN with PCA & TSNE')
+
+    plt.show()
+
 
 ### other
