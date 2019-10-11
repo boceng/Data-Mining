@@ -945,6 +945,7 @@ __整体过程：过程与kmeans大体一致。__
 __整体过程：过程与kmeans大体一致。__
 
 聚类评价得分（NMI/V_MS、HS、CS）：
+
 ![图片24](https://github.com/boceng/Data-Mining/blob/master/Homework1/result_18.jpg)
 
 虽说GMM可以拟合各种数据分布，提供最佳的逼近，但也不是很会调参，留待以后解决吧。
