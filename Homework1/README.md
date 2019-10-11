@@ -251,6 +251,79 @@ __整体过程如上。__
 
 结果很明显坏掉了。。
 
+Code:
+
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from itertools import cycle
+
+    from sklearn.datasets import load_digits
+    from sklearn.preprocessing import scale
+    from sklearn.cluster import MeanShift, estimate_bandwidth
+    from sklearn.decomposition import PCA
+    from sklearn.manifold import TSNE
+    from sklearn.metrics import homogeneity_score
+    from sklearn.metrics import completeness_score, v_measure_score
+
+    np.random.seed(233)
+
+    digits = load_digits()
+    data = scale(digits.data)   # 在均值附近集中化数据并缩放至单位方差
+    reduced_data1 = PCA(n_components=2).fit_transform(data)
+    reduced_data2 = TSNE(n_components=2).fit_transform(PCA(n_components=50).fit_transform(data))
+    print(data.shape)
+
+    n_samples, n_feature = data.shape
+    n_digits = len(np.unique(digits.target))
+    labels = digits.target
+
+
+    # MeanShit
+    X = data
+    bandwidth = estimate_bandwidth(X, quantile=0.35, n_samples=n_samples)
+
+    ms = MeanShift(bandwidth=bandwidth, bin_seeding=True)
+    ms.fit(X)
+    labels_ms = ms.labels_
+    cluster_centers = ms.cluster_centers_
+
+    labels_unique = np.unique(labels_ms)
+    n_clusters_ = len(labels_unique)
+
+    print("number of estimated clusters : %d" % n_clusters_)
+    print('v_measure_score:', v_measure_score(labels, labels_ms))
+    print('homogeneity_score:', homogeneity_score(labels, labels_ms))
+    print('completeness_score:', completeness_score(labels, labels_ms))
+
+    #############################################################################
+
+    plt.figure(figsize=(10, 8))
+    plt.clf()
+
+    X1 = reduced_data1
+    X2 = reduced_data2
+    colors = cycle('bgrcmykbgrcmykbgrcmykbgrcmyk')
+
+    plt.subplot(121)
+    for k, col in zip(range(n_clusters_), colors):
+        my_members = labels_ms == k
+        cluster_center = cluster_centers[k]
+        plt.plot(X1[my_members, 0], X1[my_members, 1], col + '.')
+        plt.plot(cluster_center[0], cluster_center[1], 'o', markerfacecolor=col,
+                 markeredgecolor='k', markersize=14)
+    plt.title('Estimated number of clusters: %d' % n_clusters_)
+
+    plt.subplot(122)
+    for k, col in zip(range(n_clusters_), colors):
+        my_members = labels_ms == k
+        cluster_center = cluster_centers[k]
+        plt.plot(X2[my_members, 0], X2[my_members, 1], col + '.')
+        plt.plot(cluster_center[0], cluster_center[1], 'o', markerfacecolor=col,
+                 markeredgecolor='k', markersize=14)
+    plt.title('Estimated number of clusters: %d' % n_clusters_)
+
+    plt.show()
+
 ### SpectralClustering
 __先通过KNN得到相似性矩阵，然后利用拉普拉斯矩阵得到特征矩阵作为最终feature。__
 
