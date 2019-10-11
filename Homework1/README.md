@@ -705,11 +705,13 @@ Code:
 __整体过程：得到原始数据通过opts判断是否进行归一化了，使用KMeans、MiniBatchKMeans分别对数据进行聚类，然后使用三种度量方法对其评估。__
 
 聚类评价得分（NMI/V_MS、HS、CS）：
+
 ![图片15](https://github.com/boceng/Data-Mining/blob/master/Homework1/result_9.jpg)
 
 可见各项度量得分均偏低，说明tf-idf对文本映射到向量空间中丢失了很多信息，比如语义等信息。
 
 观察使用tf-idf来映射文本时，进行聚类之后每个簇中前十个tf-idf权重最大的word：
+
 ![图片16](https://github.com/boceng/Data-Mining/blob/master/Homework1/result_10.png)
 
 ### MiniBatchKMeans
