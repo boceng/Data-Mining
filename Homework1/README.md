@@ -712,14 +712,14 @@ __整体过程：得到原始数据通过opts判断是否进行归一化了，�
 
 观察使用tf-idf来映射文本时，进行聚类之后每个簇中前十个tf-idf权重最大的word：
 
-![图片16](https://github.com/boceng/Data-Mining/blob/master/Homework1/result_10.png)
+![图片16](https://github.com/boceng/Data-Mining/blob/master/Homework1/result_10.jpg)
 
 ### MiniBatchKMeans
 __同样的过程得到MiniBatchKMeans的结果__
 
 ![图片17](https://github.com/boceng/Data-Mining/blob/master/Homework1/result_11.jpg)
 
-![图片18](https://github.com/boceng/Data-Mining/blob/master/Homework1/result_12.png)
+![图片18](https://github.com/boceng/Data-Mining/blob/master/Homework1/result_12.jpg)
 
 Code：
 
