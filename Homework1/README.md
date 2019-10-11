@@ -540,5 +540,89 @@ Code:
 
     plt.show()
 
+### GaussianMixture
+__整体过程基本和KMeans一样。__
 
-### other
+聚类评价得分（数据类型、运行时间、NMI/V_MS、HS、CS）：
+
+![图片13](https://github.com/boceng/Data-Mining/blob/master/Homework1/result_8.jpg)
+
+GMM应该能适合各种形状的分布，因为一般经过标准化后高斯分布往往能提供最佳的逼近，所以这里来看在手写数字辨识上的结果虽不是最优但也不是很差。
+
+聚类可视化（从左到右-从上到下：原始数据分布下的真实标签(PCA可视化)、原始数据分布下的真实标签(PCA+t-SNE可视化)、原始数据分布下使用GaussianMixture得到的标签(PCA可视化)、原始数据分布下使用GaussianMixture得到的标签(PCA+t-SNE可视化)、PCA降维后的数据分布下使用GaussianMixture得到的标签(PCA可视化)、PCA+t-SNE降维后的数据分布下使用GaussianMixture得到的标签(PCA+t-SNE可视化)）：
+![图片14](https://github.com/boceng/Data-Mining/blob/master/Homework1/Figure_7.png)
+
+可视化也是发现并没有分得很糟，仅是一些不同的簇被分为同一簇了，比如5和2比较像这种情况。
+
+Code:
+
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    from sklearn.datasets import load_digits
+    from sklearn.preprocessing import scale
+    from sklearn.mixture import GaussianMixture
+    from sklearn.decomposition import PCA
+    from sklearn.manifold import TSNE
+    from sklearn.metrics import homogeneity_score
+    from sklearn.metrics import completeness_score, v_measure_score
+
+    np.random.seed(233)
+
+    digits = load_digits()
+    data = scale(digits.data)   # 在均值附近集中化数据并缩放至单位方差
+    reduced_data1 = PCA(n_components=2).fit_transform(data)
+    reduced_data2 = TSNE(n_components=2).fit_transform(PCA(n_components=50).fit_transform(data))
+    print(data.shape)
+
+    n_samples, n_feature = data.shape
+    n_digits = len(np.unique(digits.target))
+    labels = digits.target
+
+
+    # GaussianMixture
+    y_predict_original = GaussianMixture(n_components=n_digits).fit_predict(data)
+    y_predict_reduced = GaussianMixture(n_components=n_digits).fit_predict(reduced_data1)
+
+    print('v_measure_score:', v_measure_score(labels, y_predict_original))
+    print('homogeneity_score:', homogeneity_score(labels, y_predict_original))
+    print('completeness_score:', completeness_score(labels, y_predict_original))
+    print('------------------------------------')
+    print('v_measure_score:', v_measure_score(labels, y_predict_reduced))
+    print('homogeneity_score:', homogeneity_score(labels, y_predict_reduced))
+    print('completeness_score:', completeness_score(labels, y_predict_reduced))
+
+
+    # GaussianMixture visualize
+    plt.figure(figsize=(10, 10))
+
+    plt.subplot(321)
+    plt.scatter(reduced_data1[:, 0], reduced_data1[:, 1], c=labels)
+    plt.title('Ground Truth with PCA')
+
+    plt.subplot(322)
+    plt.scatter(reduced_data2[:, 0], reduced_data2[:, 1], c=labels)
+    plt.title('Ground Truth with PCA & TSNE')
+
+    plt.subplot(323)
+    y_predict_original = GaussianMixture(n_components=n_digits).fit_predict(data)
+    plt.scatter(reduced_data1[:, 0], reduced_data1[:, 1], c=y_predict_original)
+    plt.title('Original Features GaussianMixture with PCA')
+
+    plt.subplot(324)
+    y_predict_original = GaussianMixture(n_components=n_digits).fit_predict(data)
+    plt.scatter(reduced_data2[:, 0], reduced_data2[:, 1], c=y_predict_original)
+    plt.title('Original Features GaussianMixture with PCA & TSNE')
+
+    plt.subplot(325)
+    y_predict_reduced = GaussianMixture(n_components=n_digits).fit_predict(reduced_data1)
+    plt.scatter(reduced_data1[:, 0], reduced_data1[:, 1], c=y_predict_reduced)
+    plt.title('PCA-based Feature GaussianMixture with PCA')
+
+    plt.subplot(326)
+    y_predict_reduced = GaussianMixture(n_components=n_digits).fit_predict(reduced_data2)
+    plt.scatter(reduced_data2[:, 0], reduced_data2[:, 1], c=y_predict_reduced)
+    plt.title('PCA & TSNE-based Feature GaussianMixture with PCA & TSNE')
+
+    plt.show()
+
